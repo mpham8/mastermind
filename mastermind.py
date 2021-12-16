@@ -5,104 +5,72 @@ Michael Pham
 Oct 2021
 """
 
+from random import choice
+
+
 def print_colors(color_list):
     accumulator_string = color_list[0]
     for i in range(1, len(color_list)):
         accumulator_string = accumulator_string + ", " + color_list[i]
-    #print(color_list[0], color_list[1], color_list[2], color_list[3], color_list[4], color_list[5])
     print(accumulator_string)
+
     return
+
 
 def get_guess(colors):
     print("Please enter four legal colors.  Your choices are:")
     print_colors(colors)
-    guess1 = input("Enter color 1: ")
+    
+    guess_list = []
+    for i in range(1,5):
+        guess = input("Enter color %d: " %(i))
+        while True:
+            if guess not in colors:
+                print("Please enter four legal colors.  Your choices are:")
+                print_colors(colors)
+                guess = input("Enter color %d: " %(i))
+            elif guess in colors:
+                guess_list.append(guess)
+                break        
 
-    while True:
-        if guess1 not in colors:
-            print("Please enter four legal colors.  Your choices are:")
-            print_colors(colors)
-            guess1 = input("Enter color 1: ")
-        elif guess1 in colors:
-            break
-
-    guess2 = input("Enter color 2: ")
-    while True:
-        if guess2 not in colors:
-            print("Please enter four legal colors.  Your choices are:")
-            print_colors(colors)
-            guess2 = input("Enter color 2: ")
-        elif guess2 in colors:
-            break
-
-    guess3 = input("Enter color 3: ")
-    while True:
-        if guess3 not in colors:
-            print("Please enter four legal colors.  Your choices are:")
-            print_colors(colors)
-            guess3 = input("Enter color 3: ")
-        elif guess3 in colors:
-            break
-
-    guess4 = input("Enter color 4: ")
-    while True:
-        if guess4 not in colors:
-            print("Please enter four legal colors.  Your choices are:")
-            print_colors(colors)
-            guess4 = input("Enter color 4: ")
-        elif guess4 in colors:
-            break
-
-    guess_list = [guess1, guess2, guess3, guess4]
     print("You guessed:")
     print_colors(guess_list)
+    
     return guess_list
 
 
 def generate_code(colors):
-    from random import choice
-    color1 = choice(colors)
-    color2 = choice(colors)
-    color3 = choice(colors)
-    color4 = choice(colors)
-
-    secret_list = [color1, color2, color3, color4]
+    secret_list = []
+    for i in range(4):
+        secret_list.append(choice(colors))
+    
     return secret_list
 
 
 def exact_matches(secret_list, guess_list, status_list):
-
-    int_exact_matches = 0
-
     for i in range(4):
         if secret_list[i] != guess_list[i]:
             status_list.append("nuthin")
         elif secret_list[i] == guess_list[i]:
             status_list.append("exact")
 
-
     accumulator = 0
-    for i in range(4):
-        if status_list[i] == "exact":
-            accumulator = accumulator + 1
+    for each in status_list:
+        if each == "exact":
+            accumulator += 1
 
     return accumulator
 
 
 def inexact_matches(secret_list, guess_list, status_list):
-
     accumulator = 0
-
     for i in range(4):
-        if status_list[i] == "exact" :
-            3+5
-        else:
+        if status_list[i] != "exact" :
             for f in range(4):
                 if guess_list[i] == secret_list[f] and status_list[f] != "inexact" and status_list[f] != "exact":
                     accumulator = accumulator + 1
                     status_list[f] = "inexact"
                     break
-
 
     return accumulator
 
@@ -116,21 +84,24 @@ def print_introduction():
     print("correct color, but in the wrong position.")
     print("You have ten turns to guess the correct sequence. good luck!")
 
+
 def is_game_over(num_exact_matches, turn):
     if num_exact_matches == 4:
         return True
     elif turn == 9:
         return True
 
+
 def player_won(num_exact_matches):
     if num_exact_matches == 4:
         return True
+
 
 def main():
     print_introduction()
     all_colors_list = ["blue", "turquoise", "cyan", "sapphire", "teal", "lapis"]
     secret_list = generate_code(all_colors_list)
-    #print(secret_list)
+    #print(secret_list) #COMMENT IN TO SEE SECRET LIST
 
     for i in range(10):
         print("Turn %d" %(i+1))
@@ -138,9 +109,11 @@ def main():
 
         status_list = []
         exact = exact_matches(secret_list, guess_list, status_list)
-        print("exact matches %s" %(exact))
+        print("-"*18)
+        print("exact matches: %s" %(exact))
         inexact = inexact_matches(secret_list, guess_list, status_list)
-        print("inexact matches %s" %(inexact))
+        print("inexact matches: %s" %(inexact))
+        print("-"*18)
 
         game_over = is_game_over(exact, i)
         win = player_won(exact)
